@@ -13,6 +13,12 @@ Plugin do Claude Code (servidor MCP + skills) para consultar a [API de conteúdo
 
 Requer Node >= 24 (TypeScript nativo, sem build).
 
+## Onde funciona
+
+- **Claude Code** (terminal, extensões de IDE) com **Node 24+** no PATH: skill e ferramentas MCP.
+- **claude.ai (chat web)**: só a skill é carregada; o servidor MCP local **não** é iniciado e as ferramentas não aparecem (verificado em teste). Para esse ambiente seria preciso um servidor MCP remoto (HTTP), que este repositório ainda não oferece.
+- Claude Desktop e Cowork: não verificado.
+
 ## Ferramentas MCP (14)
 
 `list_states`, `find_city`, `list_movies`, `search_events`, `get_event`, `get_event_credits`, `list_tags`, `list_theaters`, `get_theater`, `list_sessions`, `find_showtimes`, `list_session_dates`, `get_session`, `get_passport_promotion`.

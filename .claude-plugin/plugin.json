@@ -1,10 +1,29 @@
 {
   "name": "ingressodotcom",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Consulta filmes, cinemas, sessões e cidades do ingresso.com via API pública de conteúdo (MCP + skills).",
-  "author": { "name": "sandhilt", "url": "https://github.com/sandhilt" },
+  "author": {
+    "name": "sandhilt",
+    "url": "https://github.com/sandhilt"
+  },
   "homepage": "https://github.com/sandhilt/ingressodotcom",
   "repository": "https://github.com/sandhilt/ingressodotcom",
   "license": "MIT",
-  "keywords": ["ingresso.com", "cinema", "mcp", "brasil"]
+  "keywords": [
+    "ingresso.com",
+    "cinema",
+    "mcp",
+    "brasil"
+  ],
+  "mcpServers": {
+    "ingressodotcom": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/src/main.ts"
+      ],
+      "env": {
+        "INGRESSO_PARTNERSHIP": "${INGRESSO_PARTNERSHIP:-1}"
+      }
+    }
+  }
 }

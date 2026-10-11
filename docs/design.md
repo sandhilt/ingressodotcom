@@ -33,7 +33,7 @@ ESM entry; loads config, builds gateway, use cases, tools, starts the stdio serv
 - interface: every tool has full annotations and none is destructive; truncation; error mapping; an end-to-end test spawning `node src/main.ts` with `INGRESSO_BASE_URL` pointing at a local `node:http` stub server and speaking MCP over stdio (initialize, tools/list, tools/call) using `Client` + `StdioClientTransport` from `@modelcontextprotocol/client` (and `/stdio`).
 
 ## Plugin packaging (done by coordinator, not part of Codex tasks)
-`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.mcp.json`, `skills/`, `README.md`.
+`.claude-plugin/plugin.json` (the MCP server is declared inline in `mcpServers`; a root `.mcp.json` would be loaded as a project MCP config whenever someone works in this repo, with `${CLAUDE_PLUGIN_ROOT}` unset), `.claude-plugin/marketplace.json`, `skills/`, `README.md`.
 
 ## Resumo de sessões
 As 14 ferramentas incluem `find_showtimes`: o caso de uso usa apenas as rotas GET de sessões de um cinema. `summarizeShowtimes` é uma função pura que resolve o filme por ID ou trecho do título/título original sem acentos ou distinção de maiúsculas, retorna `matches` sem sessões quando há ambiguidade e agrupa contagens, preços e combinações de tipos por dia. Detalhes individuais são opcionais; resultados vazios são amigáveis. A API informa preços por sessão, mas não disponibilidade de assentos.
