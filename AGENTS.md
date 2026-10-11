@@ -7,6 +7,7 @@ MCP server + Claude Code plugin for the public ingresso.com content API
 - Node >= 24, TypeScript run natively (type stripping, no build step). Use `node src/main.ts`.
 - Because of type stripping: no `enum`, no `namespace`, no constructor parameter properties; import local files with the `.ts` extension; use `import type` for types.
 - Runtime deps are limited to the MCP SDK v2 (`@modelcontextprotocol/server`; `@modelcontextprotocol/client` is a devDependency for tests only) and `zod` (>=4.2, imported as `import * as z from "zod/v4"`). Do NOT use the v1 `@modelcontextprotocol/sdk` package. Everything else must be Node built-ins (`fetch`, `node:test`, `node:assert`, ...). Do not add dependencies without asking.
+- Dev environment: `flake.nix` + `.envrc` (`use flake`) provide Node 24 via direnv (`direnv allow`). `nix develop` works too.
 - Tests use `node:test` only: `npm test`. Type check: `npm run typecheck`.
 
 ## Architecture (Clean Architecture)
