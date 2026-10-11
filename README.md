@@ -15,9 +15,15 @@ Requer Node >= 24 (TypeScript nativo, sem build).
 
 ## Onde funciona
 
-- **Claude Code** (terminal, extensões de IDE) com **Node 24+** no PATH: skill e ferramentas MCP.
-- **claude.ai (chat web)**: só a skill é carregada; o servidor MCP local **não** é iniciado e as ferramentas não aparecem (verificado em teste). Para esse ambiente seria preciso um servidor MCP remoto (HTTP), que este repositório ainda não oferece.
-- Claude Desktop e Cowork: não verificado.
+Segundo a [matriz oficial de suporte a plugins](https://claude.com/docs/plugins/platform-support):
+
+| Superfície | Skill | Ferramentas MCP (servidor local, `node`) |
+| --- | --- | --- |
+| Claude Code (terminal, IDE, aba Code do app desktop), com Node 24+ no PATH | sim | sim |
+| Cowork (app desktop), sessão rodando no seu computador | sim | sim, com Node 24+ no PATH |
+| Chat (claude.ai web, chat do app desktop e mobile) | sim | **não**: servidores MCP locais de plugin são ignorados |
+
+Para usar no Chat seria preciso um servidor MCP remoto (HTTP) adicionado como conector, que este repositório ainda não oferece.
 
 ## Ferramentas MCP (14)
 
