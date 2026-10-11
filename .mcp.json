@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ingressodotcom": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/src/main.ts"],
+      "env": {
+        "INGRESSO_PARTNERSHIP": "${INGRESSO_PARTNERSHIP:-1}"
+      }
+    }
+  }
+}

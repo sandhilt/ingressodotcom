@@ -1,0 +1,11 @@
+{
+  "name": "sandhilt-ingressodotcom",
+  "owner": { "name": "sandhilt", "url": "https://github.com/sandhilt" },
+  "plugins": [
+    {
+      "name": "ingressodotcom",
+      "source": "./",
+      "description": "Consulta filmes, cinemas, sessões e cidades do ingresso.com (MCP + skills)."
+    }
+  ]
+}

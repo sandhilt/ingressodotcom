@@ -1,0 +1,10 @@
+{
+  "name": "ingressodotcom",
+  "version": "0.1.0",
+  "description": "Consulta filmes, cinemas, sessões e cidades do ingresso.com via API pública de conteúdo (MCP + skills).",
+  "author": { "name": "sandhilt", "url": "https://github.com/sandhilt" },
+  "homepage": "https://github.com/sandhilt/ingressodotcom",
+  "repository": "https://github.com/sandhilt/ingressodotcom",
+  "license": "MIT",
+  "keywords": ["ingresso.com", "cinema", "mcp", "brasil"]
+}

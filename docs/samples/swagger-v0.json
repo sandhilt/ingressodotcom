@@ -1,0 +1,3942 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "API Content v0",
+    "version": "v0"
+  },
+  "paths": {
+    "/v0/events/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Get all events available",
+        "parameters": [
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Event found"
+          },
+          "200": {
+            "description": "Event list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/events/tagName/{tagName}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Get all events",
+        "parameters": [
+          {
+            "name": "tagName",
+            "in": "path",
+            "description": "Tag Name",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Events found"
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "200": {
+            "description": "List of events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/events/tagUrlKey/{tagUrlKey}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Get all events by Tag Url-Key",
+        "parameters": [
+          {
+            "name": "tagUrlKey",
+            "in": "path",
+            "description": "Tag Url Key",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Events found"
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "200": {
+            "description": "List of events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/events/{id}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Return a single event",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Event Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventViewObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        }
+      }
+    },
+    "/v0/events/{id}/credits": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Retrieves the cast and crew for an event",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Event Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "castLimit",
+            "in": "query",
+            "description": "Maximum number of cast members to return",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "crewLimit",
+            "in": "query",
+            "description": "Maximum number of crew members to return",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event credits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventCreditsViewObject"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        }
+      }
+    },
+    "/v0/events/url-key/{urlKey}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Get a single event by his URLKey",
+        "parameters": [
+          {
+            "name": "urlKey",
+            "in": "path",
+            "description": "Event URLKey",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Event not found by the given URLKey"
+          },
+          "200": {
+            "description": "Event",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventViewObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/events/coming-soon/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Return coming soon events",
+        "parameters": [
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits the number of results",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No coming soon events"
+          }
+        }
+      }
+    },
+    "/v0/events/city/{cityId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Return events by city",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits the number of results",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "includeCities",
+            "in": "query",
+            "description": "Include the array of cities",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event / City not found"
+          }
+        }
+      }
+    },
+    "/v0/passport-promotion": {
+      "get": {
+        "tags": [
+          "PassportPromotion"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of passport promotion",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PassportPromotionViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/{id}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a single session",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Session id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionViewObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/theater/{theaterId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by city and theater",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "theaterId",
+            "in": "path",
+            "description": "Theater Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date using YYYY-MM-DD format",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session not found for given City and Theater"
+          },
+          "404": {
+            "description": "City or Theater not found."
+          },
+          "200": {
+            "description": "List of Sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByTheaterViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/theater/{theaterId}/partnership/{partnership}/groupBy/sessionType": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by city and theater",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "theaterId",
+            "in": "path",
+            "description": "Theater Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date using YYYY-MM-DD format",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session not found for given City and Theater"
+          },
+          "404": {
+            "description": "City or Theater not found."
+          },
+          "200": {
+            "description": "List of Sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByTheaterViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/theater/url-key/{theaterUrlKey}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by city and theater's slug",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "theaterUrlKey",
+            "in": "path",
+            "description": "Theater slug",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date using YYYY-MM-DD format",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session not found for given City and Theater"
+          },
+          "404": {
+            "description": "City or Theater not found."
+          },
+          "200": {
+            "description": "List of Sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByTheaterViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/event/{eventId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by city and event",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "Event Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date using YYYY-MM-DD format",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session not found for given City and Event"
+          },
+          "404": {
+            "description": "City or Event not found"
+          },
+          "200": {
+            "description": "List of sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByMovieViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/event/{eventId}/partnership/{partnership}/groupBy/sessionType": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by city and event",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "Event Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date using YYYY-MM-DD format",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session not found for given City and Event"
+          },
+          "404": {
+            "description": "City or Event not found"
+          },
+          "200": {
+            "description": "List of sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByMovieViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/event/{eventId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by event and partnership",
+        "description": "The Partnership Id serves as a filter. When a valid Partnership Id is provided, the resulting list of sessions will be narrowed down. \nHowever, if an invalid Partnership Id is provided, the filter won’t be applied, and all sessions for the given EventId will be returned.",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "Event Id",
+            "required": true,
+            "schema": {
+              "maxLength": 11,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 255,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Sessions not found by the Event and partnership informed. Or event not found by the given EventId."
+          },
+          "200": {
+            "description": "List of sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByMovieViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/event/url-key/{eventUrlKey}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get a list of sessions by city and event's slug",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventUrlKey",
+            "in": "path",
+            "description": "Event slug",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date using YYYY-MM-DD format",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "sessionTypeList",
+            "in": "query",
+            "description": "Session Type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "legendList",
+            "in": "query",
+            "description": "Legend",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session not found for given City and Event"
+          },
+          "404": {
+            "description": "City or Event not found"
+          },
+          "200": {
+            "description": "List of sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeByMovieViewObject"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/theater/{theaterId}/dates/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get the dates that have sessions in the informed theater",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "theaterId",
+            "in": "path",
+            "description": "Theater Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No dates available"
+          },
+          "404": {
+            "description": "City or Theater not found"
+          },
+          "200": {
+            "description": "List of available dates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeDates"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/city/{cityId}/event/{eventId}/dates/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Get the available dates for the informed movie",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "Event Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No dates available"
+          },
+          "404": {
+            "description": "City or Event not found"
+          },
+          "200": {
+            "description": "List of available dates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShowtimeDates"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v0/sessions/url-key/{urlKey}/exists": {
+      "get": {
+        "tags": [
+          "Sessions"
+        ],
+        "summary": "Verify if exists any session by event UrlKey",
+        "parameters": [
+          {
+            "name": "urlKey",
+            "in": "path",
+            "description": "Event UrlKey",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "There is at least one session with Urlkey"
+          },
+          "404": {
+            "description": "There is no sessions with UrlKey"
+          },
+          "400": {
+            "description": "Wrong UrlKey format"
+          }
+        }
+      }
+    },
+    "/v0/states": {
+      "get": {
+        "tags": [
+          "States"
+        ],
+        "summary": "Get all states and cities available",
+        "responses": {
+          "200": {
+            "description": "List of states",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/State"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/states/{uf}": {
+      "get": {
+        "tags": [
+          "States"
+        ],
+        "summary": "Get a single state and cities",
+        "parameters": [
+          {
+            "name": "uf",
+            "in": "path",
+            "description": "State id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "State not found by the given UF"
+          },
+          "200": {
+            "description": "State",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/State"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/states/city/{id}": {
+      "get": {
+        "tags": [
+          "States"
+        ],
+        "summary": "Get a single city by Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "City not found by the given Id"
+          },
+          "200": {
+            "description": "City",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/City"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/states/city/name/{urlKey}": {
+      "get": {
+        "tags": [
+          "States"
+        ],
+        "summary": "Get a single city by UrlKey",
+        "parameters": [
+          {
+            "name": "urlKey",
+            "in": "path",
+            "description": "City url key",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "City not found by the given url key"
+          },
+          "200": {
+            "description": "City",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/City"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/states/city/latlong": {
+      "get": {
+        "tags": [
+          "States"
+        ],
+        "summary": "Return cities next to the given lat/long",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "description": "Latitude",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "description": "Longitude",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "radiusInKilometers",
+            "in": "query",
+            "description": "Search area distance in meters. Default = 50km",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 50
+            }
+          },
+          {
+            "name": "resultCount",
+            "in": "query",
+            "description": "Maximum results to be returned. Default = 5",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cities",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CityByCoordinatesViewObject"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters provided"
+          },
+          "404": {
+            "description": "No city was found by the given parameters"
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/states/city/theater/{theaterSlug}": {
+      "get": {
+        "tags": [
+          "States"
+        ],
+        "summary": "Get a city by TheaterSlug",
+        "parameters": [
+          {
+            "name": "theaterSlug",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "City not found by the given theater"
+          },
+          "200": {
+            "description": "City",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/City"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/tags/getAllTags": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Return tags",
+        "responses": {
+          "200": {
+            "description": "List of tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagsViewObject"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No tags"
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/templates/soon/{cityId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get all soon events by city",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits the number of results. If not specified, a default limit of 1000 items will be applied.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of comming soon events by city",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "City not found"
+          },
+          "204": {
+            "description": "No event was found by the given parameters"
+          }
+        }
+      }
+    },
+    "/v0/templates/highlights/{cityId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get all highlights events by city and theater",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "PartnershipId",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "theatersIds",
+            "in": "query",
+            "description": "List of theaters ids separated by comma",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "justEvents",
+            "in": "query",
+            "description": "If true, does not return sessions info",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits the number of results. If not specified, a default limit of 5 items will be applied. Pass 0 for no limit.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of events highlights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HighlightViewObject"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No events highlights was found"
+          }
+        }
+      }
+    },
+    "/v0/templates/nowplaying/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get all now playing events",
+        "parameters": [
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits the number of results. If not specified, a default limit of 10 items will be applied.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "default of 0 if no value is informed",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of now playing events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No now playing events were found"
+          }
+        }
+      }
+    },
+    "/v0/templates/nowplaying/{cityId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get all now playing events by city",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Limits the number of results. If not specified, a default limit of 10 items will be applied.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "description": "default of 0 if no value is informed",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of now playing events by city",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No now playing events was found by the given city"
+          }
+        }
+      }
+    },
+    "/v0/templates/premiere/{cityId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Templates"
+        ],
+        "summary": "Get all premiere events by city",
+        "description": "Return a list of movies, which have premiered in the last 7 days, including the current day. The 7 days are counted based on UTC time.",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of premiere events by city",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfEventViewObject"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No premiere events was found by the given city"
+          }
+        }
+      }
+    },
+    "/v0/theaters/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Theaters"
+        ],
+        "summary": "Get all theaters available",
+        "parameters": [
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theater list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfTheaterViewObject"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No theater found"
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/theaters/{id}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Theaters"
+        ],
+        "summary": "Get a single theater by Id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Theater Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Theater not found by the given Id"
+          },
+          "200": {
+            "description": "Theater",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TheaterViewObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/theaters/url-key/{urlKey}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Theaters"
+        ],
+        "summary": "Get a single theater by his URLKey",
+        "parameters": [
+          {
+            "name": "urlKey",
+            "in": "path",
+            "description": "Theater URLKey",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Theater not found by the given URLKey"
+          },
+          "200": {
+            "description": "Theater",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TheaterViewObject"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/v0/theaters/city/{cityId}/partnership/{partnership}": {
+      "get": {
+        "tags": [
+          "Theaters"
+        ],
+        "summary": "Get all theaters by city",
+        "parameters": [
+          {
+            "name": "cityId",
+            "in": "path",
+            "description": "City Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnership",
+            "in": "path",
+            "description": "Partnership Id",
+            "required": true,
+            "schema": {
+              "maxLength": 10000,
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeOperationPolicies",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theaters list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListResponseOfTheaterViewObject"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Theaters / City not found in the given city."
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccessibilityHubViewObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessibilityResourceViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AccessibilityResourceViewObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageAltText": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "City": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "timeZone": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CityByCoordinatesViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "distance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DisplayAttribute": {
+        "type": "object",
+        "properties": {
+          "displayAttributeAssociationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "attributeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "boxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "boxOfficeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "display": {
+            "type": "boolean"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "typeDescriptions": {
+            "$ref": "#/components/schemas/DisplayAttributeTypeDescriptions"
+          },
+          "group": {
+            "$ref": "#/components/schemas/DisplayAttributeGroup"
+          },
+          "ultimaImportacao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DisplayAttributeFilter": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "display": {
+            "type": "boolean"
+          },
+          "typeDescriptions": {
+            "$ref": "#/components/schemas/DisplayAttributeTypeDescriptionsFilter"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DisplayAttributeGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "ultimaImportacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "iconUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "showItemsGrouped": {
+            "type": "boolean"
+          },
+          "itemSelectionIsExclusive": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DisplayAttributeGroupFilter": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "iconUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "showGrouped": {
+            "type": "boolean"
+          },
+          "exclusiveSelection": {
+            "type": "boolean"
+          },
+          "displayAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DisplayAttributeFilter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DisplayAttributeTypeDescriptions": {
+        "type": "object",
+        "properties": {
+          "detailedDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "detailedImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "summaryDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "summaryImage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DisplayAttributeTypeDescriptionsFilter": {
+        "type": "object",
+        "properties": {
+          "detailedDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "detailedImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "summaryDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "summaryImage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DummyDate": {
+        "type": "object",
+        "properties": {
+          "localDate": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "isToday": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "dayAndMonth": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "hour": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "year": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventCreditBillingTypeViewObject": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventCreditPersonViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "stageName": {
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventCreditRoleViewObject": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventCreditViewObject": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/EventCreditPersonViewObject"
+          },
+          "role": {
+            "$ref": "#/components/schemas/EventCreditRoleViewObject"
+          },
+          "billingType": {
+            "$ref": "#/components/schemas/EventCreditBillingTypeViewObject"
+          },
+          "characterName": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventCreditsViewObject": {
+        "type": "object",
+        "properties": {
+          "cast": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventCreditViewObject"
+            },
+            "nullable": true
+          },
+          "crew": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventCreditViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "movieIdUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancineId": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryOrigin": {
+            "type": "string",
+            "nullable": true
+          },
+          "releaseYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contentRating": {
+            "type": "string",
+            "nullable": true
+          },
+          "duration": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "synopsis": {
+            "type": "string",
+            "nullable": true
+          },
+          "cast": {
+            "type": "string",
+            "nullable": true
+          },
+          "director": {
+            "type": "string",
+            "nullable": true
+          },
+          "directors": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "imageFeatured": {
+            "type": "string",
+            "nullable": true
+          },
+          "distributor": {
+            "type": "string",
+            "nullable": true
+          },
+          "inPreSale": {
+            "type": "boolean"
+          },
+          "isReexhibition": {
+            "type": "boolean"
+          },
+          "isComingSoon": {
+            "type": "boolean"
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPlaying": {
+            "type": "boolean"
+          },
+          "countIsPlaying": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "premiereDate": {
+            "$ref": "#/components/schemas/DummyDate"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageViewObject"
+            },
+            "nullable": true
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "ratingDescriptors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "accessibilityHubs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessibilityHubViewObject"
+            },
+            "nullable": true
+          },
+          "completeTags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTag"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "trailers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Trailer"
+            },
+            "nullable": true
+          },
+          "partnershipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "ratingDetails": {
+            "$ref": "#/components/schemas/RatingDetails"
+          },
+          "b2BEventId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/City"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenericSessionSessionTypeViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "display": {
+            "type": "boolean"
+          },
+          "typeDescriptions": {
+            "$ref": "#/components/schemas/TypeDescriptionsViewObject"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenericSessionViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "boxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventBoxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "room": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericSessionSessionTypeViewObject"
+            },
+            "nullable": true
+          },
+          "date": {
+            "$ref": "#/components/schemas/DummyDate"
+          },
+          "realDate": {
+            "$ref": "#/components/schemas/DummyDate"
+          },
+          "time": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultSector": {
+            "type": "string",
+            "nullable": true
+          },
+          "midnightMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "appCheckoutUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasSeatSelection": {
+            "type": "boolean"
+          },
+          "driveIn": {
+            "type": "boolean"
+          },
+          "streaming": {
+            "type": "boolean"
+          },
+          "isNewCheckout": {
+            "type": "boolean"
+          },
+          "maxTicketsPerCar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "blockMessage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenericTag": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "background": {
+            "type": "string",
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenericTheaterRoomViewObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericSessionViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenericTheaterSessionTypeViewObject": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericSessionViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GeolocationViewObject": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "lng": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HighlightEventViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "movieIdUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancineId": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryOrigin": {
+            "type": "string",
+            "nullable": true
+          },
+          "releaseYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contentRating": {
+            "type": "string",
+            "nullable": true
+          },
+          "duration": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "synopsis": {
+            "type": "string",
+            "nullable": true
+          },
+          "cast": {
+            "type": "string",
+            "nullable": true
+          },
+          "director": {
+            "type": "string",
+            "nullable": true
+          },
+          "directors": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "imageFeatured": {
+            "type": "string",
+            "nullable": true
+          },
+          "distributor": {
+            "type": "string",
+            "nullable": true
+          },
+          "inPreSale": {
+            "type": "boolean"
+          },
+          "isReexhibition": {
+            "type": "boolean"
+          },
+          "isComingSoon": {
+            "type": "boolean"
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPlaying": {
+            "type": "boolean"
+          },
+          "countIsPlaying": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "premiereDate": {
+            "$ref": "#/components/schemas/DummyDate"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageViewObject"
+            },
+            "nullable": true
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "ratingDescriptors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "accessibilityHubs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessibilityHubViewObject"
+            },
+            "nullable": true
+          },
+          "completeTags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTag"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "trailers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Trailer"
+            },
+            "nullable": true
+          },
+          "partnershipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "ratingDetails": {
+            "$ref": "#/components/schemas/RatingDetails"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HighlightViewObject": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/HighlightEventViewObject"
+          },
+          "showtimes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SimplifiedTheaterViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImageViewObject": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ListResponseOfEventViewObject": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventViewObject"
+            },
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ListResponseOfTheaterViewObject": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TheaterViewObject"
+            },
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OperationPolicyViewObject": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryName": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryIconUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryType": {
+            "type": "string",
+            "nullable": true
+          },
+          "policyId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "policyDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PassportPromotionViewObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "validity": {
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RatingDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SessionViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "boxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventBoxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "room": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericSessionSessionTypeViewObject"
+            },
+            "nullable": true
+          },
+          "date": {
+            "$ref": "#/components/schemas/DummyDate"
+          },
+          "realDate": {
+            "$ref": "#/components/schemas/DummyDate"
+          },
+          "time": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultSector": {
+            "type": "string",
+            "nullable": true
+          },
+          "midnightMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasSeatSelection": {
+            "type": "boolean"
+          },
+          "driveIn": {
+            "type": "boolean"
+          },
+          "streaming": {
+            "type": "boolean"
+          },
+          "isNewCheckout": {
+            "type": "boolean"
+          },
+          "maxTicketsPerCar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "blockMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "appCheckoutUrl": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "sessionTypeCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "theater": {
+            "$ref": "#/components/schemas/TheaterViewObject"
+          },
+          "event": {
+            "$ref": "#/components/schemas/EventViewObject"
+          },
+          "displayAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DisplayAttribute"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShowtimeByMovieViewObject": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateFormatted": {
+            "type": "string",
+            "nullable": true
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "nullable": true
+          },
+          "isToday": {
+            "type": "boolean"
+          },
+          "theaters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SimplifiedTheaterViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShowtimeByTheaterEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "b2BId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "originalTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "movieIdUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "inPreSale": {
+            "type": "boolean"
+          },
+          "isReexhibition": {
+            "type": "boolean"
+          },
+          "duration": {
+            "type": "string",
+            "nullable": true
+          },
+          "contentRating": {
+            "type": "string",
+            "nullable": true
+          },
+          "distributor": {
+            "type": "string",
+            "nullable": true
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURLByTheater": {
+            "type": "string",
+            "nullable": true
+          },
+          "nationalSiteURLByTheater": {
+            "type": "string",
+            "nullable": true
+          },
+          "ancineId": {
+            "type": "string",
+            "nullable": true
+          },
+          "releaseYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageViewObject"
+            },
+            "nullable": true
+          },
+          "trailers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Trailer"
+            },
+            "nullable": true
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "ratingDescriptors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "accessibilityHubs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AccessibilityHubViewObject"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "completeTags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTag"
+            },
+            "nullable": true
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTheaterRoomViewObject"
+            },
+            "nullable": true
+          },
+          "sessionTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTheaterSessionTypeViewObject"
+            },
+            "nullable": true
+          },
+          "ratingDetails": {
+            "$ref": "#/components/schemas/RatingDetails"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShowtimeByTheaterViewObject": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateFormatted": {
+            "type": "string",
+            "nullable": true
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "nullable": true
+          },
+          "isToday": {
+            "type": "boolean"
+          },
+          "movies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShowtimeByTheaterEvent"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShowtimeDates": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateFormatted": {
+            "type": "string",
+            "nullable": true
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "nullable": true
+          },
+          "isToday": {
+            "type": "boolean"
+          },
+          "sessionTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShowtimeFilter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShowtimeFilter": {
+        "type": "object",
+        "properties": {
+          "byDisplayAttributeGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DisplayAttributeGroupFilter"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SimplifiedTheaterViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "boxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressComplement": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "string",
+            "nullable": true
+          },
+          "properties": {
+            "$ref": "#/components/schemas/TheaterPropertiesViewObject"
+          },
+          "functionalities": {
+            "$ref": "#/components/schemas/TheaterFunctionalityViewObject"
+          },
+          "deliveryType": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "blockMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTheaterRoomViewObject"
+            },
+            "nullable": true
+          },
+          "sessionTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GenericTheaterSessionTypeViewObject"
+            },
+            "nullable": true
+          },
+          "geolocation": {
+            "$ref": "#/components/schemas/GeolocationViewObject"
+          },
+          "operationPolicies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationPolicyViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "State": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "type": "string",
+            "nullable": true
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/City"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TagsViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "isGroupingActive": {
+            "type": "boolean"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "showAllEnabled": {
+            "type": "boolean"
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TheaterFunctionalityViewObject": {
+        "type": "object",
+        "properties": {
+          "operationPolicyEnabled": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TheaterPropertiesViewObject": {
+        "type": "object",
+        "properties": {
+          "hasBomboniere": {
+            "type": "boolean"
+          },
+          "hasContactlessWithdrawal": {
+            "type": "boolean"
+          },
+          "hasSession": {
+            "type": "boolean"
+          },
+          "hasSeatDistancePolicy": {
+            "type": "boolean"
+          },
+          "hasSeatDistancePolicyArena": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TheaterRoomDocumentViewObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TheaterRoomViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TheaterRoomDocumentViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TheaterViewObject": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "boxOfficeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageViewObject"
+            },
+            "nullable": true
+          },
+          "theaterBackgroundColor": {
+            "type": "string",
+            "nullable": true
+          },
+          "urlKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "nationalSiteURL": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "cnpj": {
+            "type": "string",
+            "nullable": true
+          },
+          "districtAuthorization": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "addressComplement": {
+            "type": "string",
+            "nullable": true
+          },
+          "number": {
+            "type": "string",
+            "nullable": true
+          },
+          "cityId": {
+            "type": "string",
+            "nullable": true
+          },
+          "cityName": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "type": "string",
+            "nullable": true
+          },
+          "neighborhood": {
+            "type": "string",
+            "nullable": true
+          },
+          "properties": {
+            "$ref": "#/components/schemas/TheaterPropertiesViewObject"
+          },
+          "functionalities": {
+            "$ref": "#/components/schemas/TheaterFunctionalityViewObject"
+          },
+          "telephones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "geolocation": {
+            "$ref": "#/components/schemas/GeolocationViewObject"
+          },
+          "deliveryType": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "corporation": {
+            "type": "string",
+            "nullable": true
+          },
+          "corporationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "corporationPriority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "corporationAvatarBackground": {
+            "type": "string",
+            "nullable": true
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TheaterRoomViewObject"
+            },
+            "nullable": true
+          },
+          "totalRooms": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "blockMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "partnershipType": {
+            "type": "string",
+            "nullable": true
+          },
+          "operationPolicies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationPolicyViewObject"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Trailer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "embeddedUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TypeDescriptionsViewObject": {
+        "type": "object",
+        "properties": {
+          "summaryDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "summaryImage": {
+            "type": "string",
+            "nullable": true
+          },
+          "detailedDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "detailedImage": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "JWT Authentication (JSON Web Token). Enter your token without the 'Bearer ' prefix.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "UserIdSchema": {
+        "type": "apiKey",
+        "description": "UserId Authentication. Type your 'UserId'.",
+        "name": "X-User",
+        "in": "header"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Events"
+    },
+    {
+      "name": "PassportPromotion"
+    },
+    {
+      "name": "Sessions"
+    },
+    {
+      "name": "States"
+    },
+    {
+      "name": "Tags"
+    },
+    {
+      "name": "Templates"
+    },
+    {
+      "name": "Theaters"
+    }
+  ]
+}

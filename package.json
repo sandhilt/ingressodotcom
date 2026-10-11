@@ -1,0 +1,28 @@
+{
+  "name": "ingressodotcom",
+  "version": "0.1.0",
+  "description": "Claude Code plugin (MCP server + skills) for the public ingresso.com content API",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "ingressodotcom-mcp": "src/main.ts"
+  },
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.3.1",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.3.1",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}
