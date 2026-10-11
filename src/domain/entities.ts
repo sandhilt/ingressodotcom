@@ -14,6 +14,16 @@ export interface State {
 }
 
 export interface Event {
+  originalTitle?: string | null;
+  genres?: string[] | null;
+  contentRating?: string | null;
+  duration?: string | null;
+  premiereDate?: { localDate?: string | null } | null;
+  inPreSale?: boolean;
+  isReexhibition?: boolean;
+  isComingSoon?: boolean;
+  countIsPlaying?: number | null;
+  siteURL?: string | null;
   id?: string | null;
   title?: string | null;
   urlKey?: string | null;

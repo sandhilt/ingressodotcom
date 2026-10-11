@@ -9,7 +9,7 @@ const OUTPUT_BUDGET = 100_000;
 const NARROW_QUERY = 'Output truncated. Narrow the query by city, theater, event or date, or request fewer results.';
 
 /** Bound JSON output without mutating upstream results. */
-function serialize(value: unknown): string {
+function serialize(value: unknown, pageLimit = 50): string {
   if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
     const result = value as Record<string, unknown>;
     if (Array.isArray(result.items) && result.items.length === 0 && result.count === 0) {
@@ -44,11 +44,11 @@ function serialize(value: unknown): string {
   }
   function encode(data: unknown): string {
     const note = dropped > 0
-      ? `${dropped} items dropped; arrays limited to 50 items. ${NARROW_QUERY}`
+      ? `${dropped} items dropped; arrays limited to ${pageLimit} items. ${NARROW_QUERY}`
       : NARROW_QUERY;
     return JSON.stringify(truncated ? { data, note } : data ?? null);
   }
-  for (const limit of [50, 25, 10, 5, 1]) {
+  for (const limit of [pageLimit, 25, 10, 5, 1]) {
     dropped = 0;
     const output = encode(reduce(value, limit, Infinity));
     if (output.length <= OUTPUT_BUDGET) {
@@ -79,8 +79,12 @@ function errorMessage(error: unknown): string {
   return 'An unexpected error occurred.';
 }
 
-export function createServer(deps: Deps, tools: ToolDefinition[] = createTools(deps)): McpServer {
-  const server = new McpServer({ name: 'ingressodotcom', version: '0.1.0' });
+export function createServer(
+  deps: Deps,
+  tools: ToolDefinition[] = createTools(deps),
+  version = '0.0.0-dev',
+): McpServer {
+  const server = new McpServer({ name: 'ingressodotcom', version });
   for (const tool of tools) {
     server.registerTool(tool.name, {
       title: tool.title,
@@ -90,7 +94,7 @@ export function createServer(deps: Deps, tools: ToolDefinition[] = createTools(d
     }, async input => {
       try {
         const result = await tool.handler(input);
-        return { content: [{ type: 'text', text: serialize(result) }] };
+        return { content: [{ type: 'text', text: serialize(result, ['list_movies', 'search_events'].includes(tool.name) ? 200 : 50) }] };
       } catch (error) {
         return { isError: true, content: [{ type: 'text', text: errorMessage(error) }] };
       }

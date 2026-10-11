@@ -8,7 +8,7 @@ test('partnership precedence, pass-through response and upstream errors', async 
   const gateway = new FakeContentGateway();
   const response = { items: [{ id: '1', custom: true }], count: 1 };
   gateway.results.events = response;
-  assert.equal(await usecases.searchEvents({ gateway }), response);
+  assert.deepEqual((await usecases.searchEvents({ gateway }, { compact: false })).items, response.items);
   await usecases.searchEvents({ gateway, config: { partnership: 'configured' } });
   await usecases.searchEvents({ gateway, config: { partnership: 'configured' } }, { partnership: 'explicit' });
   assert.deepEqual(gateway.calls.map(call => call.args[0]), ['1', 'configured', 'explicit']);
@@ -57,9 +57,9 @@ test('invalid route combinations are rejected before I/O', async () => {
     () => usecases.getTheater(deps, { id: '1', urlKey: 'x' }),
     () => usecases.getEventCredits(deps, { id: 1.5 }),
     () => usecases.searchEvents(deps, { tagName: 'x', cityId: '1' }),
-    () => usecases.searchEvents(deps, { limit: 1 }),
+    () => usecases.searchEvents(deps, { limit: 201 }),
     () => usecases.listMovies(deps, { category: 'soon' }),
-    () => usecases.listMovies(deps, { category: 'premiere', cityId: '1', limit: 1 }),
+    () => usecases.listMovies(deps, { category: 'premiere', cityId: '1', limit: 0 }),
     () => usecases.listMovies(deps, { category: 'soon', cityId: '1', skip: 0 }),
     () => usecases.listSessionDates(deps, { cityId: '1' }),
     ...[{}, { theaterId: '2' }, { cityId: '1', theaterId: '2', eventId: '3' }, { cityId: '1', eventUrlKey: 'x', groupBySessionType: true }, { cityId: '1', theaterId: '2', includeOperationPolicies: true }, { cityId: '1', eventId: '2', date: '2026-02-30' }, { eventId: '2', date: '2026-10-11' }, { cityId: '1', eventId: '2', legendList: 'DUB' }].map(input => () => usecases.listSessions(deps, input)),

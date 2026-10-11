@@ -43,3 +43,12 @@ Shebang-less ESM entry; loads config, builds gateway, use cases, tools, starts t
 
 ## Resumo de sessões
 As 14 ferramentas incluem `find_showtimes`: o caso de uso usa apenas as rotas GET de sessões de um cinema. `summarizeShowtimes` é uma função pura que resolve o filme por ID ou trecho do título/título original sem acentos ou distinção de maiúsculas, retorna `matches` sem sessões quando há ambiguidade e agrupa contagens, preços e combinações de tipos por dia. Detalhes individuais são opcionais; resultados vazios são amigáveis. A API informa preços por sessão, mas não disponibilidade de assentos.
+
+## Listas compactas e paginação de eventos
+
+- Domain: `summarizeEvent` é uma projeção pura para id, title, originalTitle (somente diferente), genres, contentRating, duration, premiere (YYYY-MM-DD de premiereDate.localDate), inPreSale, isReexhibition, isComingSoon, showSize (countIsPlaying) e siteURL.
+- Application: listMovies busca páginas nowplaying de 100 itens com skip crescente via ContentGateway.templates, até uma página vazia/curta. Teto de 20 páginas; ao atingir o teto sem comprovar o fim, retorna erro em vez de um total incompleto. Outras categorias são buscadas uma vez, sem skip upstream. A validação de skip exclusivo de nowplaying é preservada.
+- EventPageInput separa a paginação da ferramenta das opções upstream TemplateOptions/LimitedEventOptions. compact padrão true, sort padrão popularity (countIsPlaying decrescente, título pt-BR para desempate), alternativa api, limit padrão 40 (1–200), skip padrão 0. Ordenação precede o recorte; compact false mantém os eventos brutos dentro do mesmo envelope.
+- searchEvents não repassa limit à API: projeta, ordena e pagina a lista recebida. Todos os seletores aceitam limit/skip.
+- Envelope: total (itens buscados), returned, skip, hasMore, nextSkip opcional, items e note orientando a próxima chamada. Não usa count upstream como total de uma lista que não foi buscada.
+- Interface: schemas e descrições pt-BR expõem essas opções. O serializador permite até 200 itens para as duas ferramentas, mantendo o orçamento global de 100.000 caracteres. Páginas compactas normais preservam o envelope; payloads raw excessivos ainda passam pela proteção genérica.

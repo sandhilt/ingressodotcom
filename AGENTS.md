@@ -27,3 +27,8 @@ Dependencies point inward only: `interface` -> `application` -> `domain`; `infra
 ## Workflow
 - Claude coordinates and reviews; Codex (`codex:codex-rescue`) is the companion that reads/writes code per layer. Cross-check Codex output against the code before accepting.
 - Commits in English. Never include session links in commits/PRs.
+
+## Releases
+- Bump the version on EVERY release that changes behavior, in all three places, in the same commit: `package.json` and `package-lock.json` (`npm version <x.y.z> --no-git-tag-version`) plus `.claude-plugin/plugin.json`. The MCP server reads its version from `package.json` in `src/main.ts`; `test/release.test.ts` fails if the three files disagree. Claude Code caches installed plugins by version, so without a bump users never receive the update.
+- Use semver (new tool or option = minor, fix = patch). Tag the release (`vX.Y.Z`) and push the tag.
+- After pushing, update the installed copy with `claude plugin update ingressodotcom@sandhilt-ingressodotcom`.

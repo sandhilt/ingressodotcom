@@ -102,8 +102,6 @@ test('pass-through tools round-trip through matching use cases and gateway metho
   const cases: Array<[string, Record<string, unknown>, keyof ContentGateway, unknown[]]> = [
     ['list_states', {}, 'states', []],
     ['find_city', { id: 'city' }, 'cityById', ['city']],
-    ['list_movies', { category: 'nowplaying' }, 'templates', ['nowplaying', 'configured', undefined, { limit: undefined, skip: undefined, theatersIds: undefined, justEvents: undefined }]],
-    ['search_events', { cityId: 'city', partnership: 'custom', limit: 3 }, 'eventsByCity', ['city', 'custom', { includeCities: undefined, limit: 3 }]],
     ['get_event', { urlKey: 'movie' }, 'eventByUrlKey', ['movie', 'configured', { includeCities: undefined }]],
     ['get_event_credits', { id: 42, castLimit: 2 }, 'eventCredits', [42, { castLimit: 2, crewLimit: undefined }]],
     ['list_tags', {}, 'tags', []],
@@ -277,4 +275,40 @@ test('find_showtimes projects compact summaries, supports details and validates 
     assert.equal(invalid.isError, true);
   }
   assert.equal(gateway.calls.length, before);
+});
+
+test('event tools expose compact sorted pages and preserve pages above the generic array limit', async t => {
+  const gateway = new FakeContentGateway();
+  const events = [
+    ...Array.from({ length: 180 }, (_, id) => ({ id: String(id), title: `Antigo ${id}`, countIsPlaying: 2, synopsis: 'x'.repeat(5000) })),
+    { id: 'v', title: 'Verity', countIsPlaying: 393 },
+    { id: 's', title: 'Se Eu Fosse Você 3', countIsPlaying: 397 },
+    { id: 'd', title: 'Vingadores: Doutor Destino', countIsPlaying: 376 },
+  ];
+  gateway.templatePages = [events.slice(0, 100), events.slice(100)];
+  gateway.results.events = { items: events };
+  const connection = await connect(gateway);
+  t.after(() => connection.close());
+  const defaults = await connection.client.callTool({ name: 'list_movies', arguments: { category: 'nowplaying', cityId: '2' } }) as CallToolResult;
+  const page = JSON.parse(text(defaults));
+  assert.equal(page.total, 183);
+  assert.equal(page.returned, 40);
+  assert.equal(page.nextSkip, 40);
+  assert.deepEqual(page.items.slice(0, 3).map((event: { title: string }) => event.title), ['Se Eu Fosse Você 3', 'Verity', 'Vingadores: Doutor Destino']);
+  assert.ok(text(defaults).length < 20_000);
+  const next = await connection.client.callTool({ name: 'list_movies', arguments: { category: 'nowplaying', cityId: '2', skip: page.nextSkip, limit: 100 } }) as CallToolResult;
+  assert.equal(JSON.parse(text(next)).items.length, 100);
+  const search = await connection.client.callTool({ name: 'search_events', arguments: { limit: 200 } }) as CallToolResult;
+  assert.equal(JSON.parse(text(search)).items.length, 183);
+  const raw = await connection.client.callTool({ name: 'search_events', arguments: { compact: false, sort: 'api', limit: 1 } }) as CallToolResult;
+  assert.equal(JSON.parse(text(raw)).items[0].synopsis.length, 5000);
+  for (const name of ['list_movies', 'search_events']) {
+    const tool = (await connection.client.listTools()).tools.find(tool => tool.name === name)!;
+    const properties = tool.inputSchema.properties as Record<string, { default?: unknown; maximum?: number }>;
+    assert.equal(properties.compact.default, true);
+    assert.equal(properties.sort.default, 'popularity');
+    assert.equal(properties.limit.default, 40);
+    assert.equal(properties.limit.maximum, 200);
+    assert.ok(properties.skip);
+  }
 });

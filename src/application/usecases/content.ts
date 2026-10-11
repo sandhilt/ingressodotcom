@@ -1,7 +1,10 @@
+import type { Event } from '../../domain/entities.ts';
+import type { EventPageInput } from './eventPage.ts';
+import { eventItems, eventPage, validateEventPage } from './eventPage.ts';
 import type { Deps, PartnershipInput } from './Deps.ts';
 import type {
-  EventOptions, LimitedEventOptions, PolicyOptions, CreditsOptions,
-  TemplateKind, TemplateOptions, SessionsInput, SessionDatesInput,
+  EventOptions, PolicyOptions, CreditsOptions,
+  TemplateKind, SessionsInput, SessionDatesInput,
 } from '../ports/ContentGateway.ts';
 import { partnership, text, exactlyOne } from './Deps.ts';
 import { InvalidInputError } from '../../domain/errors.ts';
@@ -59,7 +62,7 @@ export async function getEventCredits(deps: Deps, input: CreditsOptions & {
   return deps.gateway.eventCredits(input.id, { castLimit: input.castLimit, crewLimit: input.crewLimit });
 }
 
-export async function searchEvents(deps: Deps, input: PartnershipInput & LimitedEventOptions & {
+export async function searchEvents(deps: Deps, input: PartnershipInput & EventOptions & EventPageInput & {
   tagName?: string;
   tagUrlKey?: string;
   cityId?: string;
@@ -73,25 +76,25 @@ export async function searchEvents(deps: Deps, input: PartnershipInput & Limited
   for (const key of selectors) {
     text((input as Record<string, string>)[key], key);
   }
-  integers(input, ['limit']);
+  validateEventPage(input);
   const p = partnership(deps, input);
-  const options = { includeCities: input.includeCities, limit: input.limit };
-  if (input.limit !== undefined && input.cityId === undefined && !input.comingSoon) {
-    throw new InvalidInputError('limit requires cityId or comingSoon');
-  }
+  const options = { includeCities: input.includeCities };
+  let response;
   if (input.tagName !== undefined || input.tagUrlKey !== undefined) {
-    return deps.gateway.eventsByTag({ tagName: input.tagName, tagUrlKey: input.tagUrlKey }, p, { includeCities: input.includeCities });
+    response = await deps.gateway.eventsByTag({ tagName: input.tagName, tagUrlKey: input.tagUrlKey }, p, options);
+  } else if (input.cityId !== undefined) {
+    response = await deps.gateway.eventsByCity(input.cityId, p, options);
+  } else if (input.comingSoon) {
+    response = await deps.gateway.eventsComingSoon(p, options);
+  } else {
+    response = await deps.gateway.events(p, options);
   }
-  if (input.cityId !== undefined) {
-    return deps.gateway.eventsByCity(input.cityId, p, options);
-  }
-  if (input.comingSoon) {
-    return deps.gateway.eventsComingSoon(p, options);
-  }
-  return deps.gateway.events(p, { includeCities: input.includeCities });
+  return eventPage(eventItems(response), input);
 }
 
-export async function listMovies(deps: Deps, input: PartnershipInput & TemplateOptions & {
+export async function listMovies(deps: Deps, input: PartnershipInput & EventPageInput & {
+  theatersIds?: string;
+  justEvents?: boolean;
   category: TemplateKind;
   cityId?: string;
 }) {
@@ -101,22 +104,32 @@ export async function listMovies(deps: Deps, input: PartnershipInput & TemplateO
   if (input.category !== 'nowplaying' || input.cityId !== undefined) {
     text(input.cityId!, 'cityId');
   }
-  integers(input, ['limit', 'skip']);
+  validateEventPage(input);
   if (input.skip !== undefined && input.category !== 'nowplaying') {
     throw new InvalidInputError('skip requires nowplaying');
   }
   if ((input.theatersIds !== undefined || input.justEvents !== undefined) && input.category !== 'highlights') {
     throw new InvalidInputError('Highlight options require highlights');
   }
-  if (input.category === 'premiere' && input.limit !== undefined) {
-    throw new InvalidInputError('premiere has no limit');
+  const p = partnership(deps, input);
+  const events: Event[] = [];
+  const pageSize = 100;
+  const maxPages = input.category === 'nowplaying' ? 20 : 1;
+  for (let page = 0; page < maxPages; page++) {
+    const response = await deps.gateway.templates(input.category, p, input.cityId, {
+      limit: input.category === 'nowplaying' ? pageSize
+        : input.category === 'highlights' ? 0 : undefined,
+      skip: input.category === 'nowplaying' ? page * pageSize : undefined,
+      theatersIds: input.theatersIds,
+      justEvents: input.justEvents,
+    });
+    const items = eventItems(response);
+    events.push(...items);
+    if (items.length < pageSize || input.category !== 'nowplaying') {
+      return eventPage(events, input);
+    }
   }
-  return deps.gateway.templates(input.category, partnership(deps, input), input.cityId, {
-    limit: input.limit,
-    skip: input.skip,
-    theatersIds: input.theatersIds,
-    justEvents: input.justEvents,
-  });
+  throw new InvalidInputError('Catalog exceeds the safety cap of 20 API pages; narrow the city or partnership.');
 }
 
 export async function listTheaters(deps: Deps, input: PartnershipInput & PolicyOptions & {

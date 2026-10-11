@@ -54,6 +54,15 @@ test('stdio initializes, lists safe tools and calls list_states against a local 
     assert.equal(tool.annotations?.readOnlyHint, true);
     assert.equal(tool.annotations?.destructiveHint, false);
   }
+  for (const name of ['list_movies', 'search_events']) {
+    const tool = tools.find(tool => tool.name === name)!;
+    const properties = tool.inputSchema.properties as Record<string, { default?: unknown; maximum?: number }>;
+    assert.equal(properties.compact.default, true);
+    assert.equal(properties.sort.default, 'popularity');
+    assert.equal(properties.limit.default, 40);
+    assert.equal(properties.limit.maximum, 200);
+    assert.ok(properties.skip);
+  }
   const result = await client.callTool({ name: 'list_states', arguments: {} });
   assert.ok(!result.isError, stderr);
   const content = result.content[0];

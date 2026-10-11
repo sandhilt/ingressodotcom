@@ -1,3 +1,4 @@
+import pkg from '../package.json' with { type: 'json' };
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import type { Deps } from './application/usecases/Deps.ts';
 import { loadConfig } from './infrastructure/config.ts';
@@ -10,7 +11,7 @@ try {
   const deps: Deps = { config, gateway: new IngressoHttpGateway(config) };
   const tools = createTools(deps);
 
-  serveStdio(() => createServer(deps, tools), {
+  serveStdio(() => createServer(deps, tools, pkg.version), {
     onerror: error => console.error('MCP stdio error:', error.message),
   });
 } catch (error) {

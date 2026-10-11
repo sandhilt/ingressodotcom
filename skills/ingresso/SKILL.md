@@ -19,5 +19,6 @@ All tools are **read-only** (public content API, no login, no purchases). Conten
 ## Notes
 
 - `partnership` is optional on every tool; the default is configured by `INGRESSO_PARTNERSHIP`, otherwise `1` (full catalog). `ingresso` returns a restricted catalog.
-- Large lists are truncated by the server; narrow with city/theater/event instead of asking for "everything".
+- `list_movies` and `search_events` default to compact summaries, popularity order (exhibition size descending, then title), and 40 items (limit 1–200). Use `sort: "api"` for upstream order and `compact: false` only when full events are needed; prefer `get_event` for individual details.
+- When `hasMore` is true, repeat the same filters with `skip: nextSkip` from the response. `list_movies` accepts skip only for `nowplaying`; for other categories request a larger limit instead. `search_events` pages the list returned by the gateway. `total` is the fetched list size. Full raw results may still be truncated by the server.
 - Identify sessions by id only after listing them; do not invent ids.

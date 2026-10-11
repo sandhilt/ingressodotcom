@@ -19,6 +19,14 @@ Requer Node >= 24 (TypeScript nativo, sem build).
 
 Todas carregam `annotations` MCP derivadas do método HTTP (`readOnlyHint: true`, `destructiveHint: false`).
 
+## Listas de filmes
+
+`list_movies` e `search_events` retornam resumos por padrão (`compact: true`), sem sinopses, imagens ou trailers. `compact: false` retorna eventos completos; para detalhes de um filme, prefira `get_event`.
+
+`sort: "popularity"` (padrão) ordena por `showSize` (`countIsPlaying`, tamanho de exibição) decrescente e depois título; `sort: "api"` preserva a ordem da API. A página tem `limit: 40` por padrão (1–200) e retorna `total`, `returned`, `skip`, `hasMore`, `nextSkip` quando aplicável, `items` e `note`. Quando `hasMore`, repita os filtros com `skip: nextSkip`.
+
+Em `list_movies`, `skip` continua exclusivo de `nowplaying`; outras categorias aceitam `limit`, mas não `skip`. O caso de uso busca todas as páginas de `nowplaying` (100 eventos por chamada, até 20 páginas) antes de ordenar e paginar; exceder esse teto causa erro explícito. Outras categorias são buscadas uma vez. `search_events` pagina somente a lista recebida da API. `limit` e `skip` das ferramentas não são repassados como paginação da API. Resultados completos ainda estão sujeitos ao orçamento de saída.
+
 ## Configuração (env)
 
 | Variável | Padrão |
