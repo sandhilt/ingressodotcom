@@ -55,6 +55,32 @@ npm test
 npm run typecheck
 ```
 
+Com Nix, o `flake.nix` e o `.envrc` fornecem o Node 24: rode `direnv allow` (ou `nix develop`).
+
+### Testar o servidor MCP com o Inspector
+
+Na raiz do repositório, com Node 24:
+
+```
+npx @modelcontextprotocol/inspector node src/main.ts
+```
+
+Ele imprime uma URL local (`http://127.0.0.1:6274?...`) e abre o navegador. Em **Tools**, liste as ferramentas (cada uma deve mostrar `readOnlyHint: true`) e chame uma, por exemplo `find_city` com `name: "Rio de Janeiro"`.
+
+Sem navegador, pelo modo CLI:
+
+```
+npx @modelcontextprotocol/inspector --cli node src/main.ts --method tools/list
+npx @modelcontextprotocol/inspector --cli node src/main.ts --method tools/call \
+  --tool-name find_city --tool-arg name="Rio de Janeiro" --tool-arg uf=RJ
+```
+
+Dicas:
+
+- Para testar outro catálogo, defina a variável: `INGRESSO_PARTNERSHIP=ingresso npx @modelcontextprotocol/inspector node src/main.ts`.
+- Sem keychain do sistema (como no WSL), o Inspector grava o token da sessão em `~/.mcp-inspector/secrets.json`. Use `MCP_INSPECTOR_SECRET_STORE=memory` para não deixar nada em disco.
+- O Inspector escreve avisos no stderr. Se encadear com `jq`, descarte-o (`2>/dev/null`).
+
 Arquitetura (Clean Architecture) e regras em [`AGENTS.md`](AGENTS.md) e [`docs/design.md`](docs/design.md).
 
 ## Licença
