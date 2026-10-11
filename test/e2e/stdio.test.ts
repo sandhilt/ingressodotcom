@@ -49,7 +49,7 @@ test('stdio initializes, lists safe tools and calls list_states against a local 
   await client.connect(transport);
   assert.equal(client.getServerVersion()?.name, 'ingressodotcom');
   const { tools } = await client.listTools();
-  assert.equal(tools.length, 13);
+  assert.equal(tools.length, 14);
   for (const tool of tools) {
     assert.equal(tool.annotations?.readOnlyHint, true);
     assert.equal(tool.annotations?.destructiveHint, false);

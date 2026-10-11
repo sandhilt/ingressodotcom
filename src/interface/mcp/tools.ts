@@ -14,6 +14,7 @@ const guidance: Record<string, string> = {
   list_tags: 'Consulte categorias antes de filtrar eventos.',
   list_theaters: 'Use cityId para limitar os cinemas à cidade.',
   get_theater: 'Informe id ou urlKey do cinema.',
+  find_showtimes: 'Informe cidade, cinema e filme para resumir sessões e preços; não informa disponibilidade de assentos.',
   list_sessions: 'Escolha um cinema ou evento. groupBySessionType exige cityId e theaterId ou eventId; use date no formato YYYY-MM-DD.',
   list_session_dates: 'Informe cityId obrigatório e theaterId ou eventId para consultar dias disponíveis.',
   get_session: 'Use um ID obtido ao listar sessões.',
@@ -44,6 +45,26 @@ function define<S extends z.ZodRawShape>(
 }
 
 export function createTools(deps: Deps): ToolDefinition[] {
+  const showtimes = define('find_showtimes', 'Resumir sessões de um filme', {
+    cityId: z.string().trim().min(1).describe('ID obrigatório da cidade.'),
+    theaterId: z.string().trim().min(1).optional().describe('ID do cinema; informe exatamente um entre theaterId e theaterUrlKey.'),
+    theaterUrlKey: z.string().trim().min(1).optional().describe('Chave de URL do cinema, alternativa a theaterId.'),
+    eventId: z.string().trim().min(1).optional().describe('ID do filme; informe exatamente um entre eventId e title.'),
+    title: z.string().trim().min(1).optional().describe('Trecho do título ou título original, sem distinção de acentos ou maiúsculas; ambiguidades retornam matches para escolher eventId.'),
+    date: z.iso.date().optional().describe('Data opcional no formato YYYY-MM-DD para restringir a um dia.'),
+    includeSessions: z.boolean().default(false).describe('Incluir detalhes de cada sessão; padrão false retorna apenas o resumo diário.'),
+    partnership: z.string().optional().describe(
+      'Parceiro opcional; usa o padrão configurado ou ' + DEFAULT_PARTNERSHIP + '. ingresso retorna um catálogo restrito.',
+    ),
+  }, [
+    '/v0/sessions/city/{cityId}/theater/{theaterId}/partnership/{partnership}',
+    '/v0/sessions/city/{cityId}/theater/url-key/{theaterUrlKey}/partnership/{partnership}',
+  ], input => usecases.findShowtimes(deps, input));
+  showtimes.inputSchema = showtimes.inputSchema
+    .refine(input => [input.theaterId, input.theaterUrlKey].filter(value => value !== undefined).length === 1,
+      { message: 'Informe exatamente um entre theaterId e theaterUrlKey.' })
+    .refine(input => [input.eventId, input.title].filter(value => value !== undefined).length === 1,
+      { message: 'Informe exatamente um entre eventId e title.' });
   return [
     define('list_states', 'Listar estados', {
     }, [
@@ -155,6 +176,7 @@ export function createTools(deps: Deps): ToolDefinition[] {
       '/v0/sessions/event/{eventId}/partnership/{partnership}',
       '/v0/sessions/city/{cityId}/event/url-key/{eventUrlKey}/partnership/{partnership}',
     ], input => usecases.listSessions(deps, input)),
+    showtimes,
     define('list_session_dates', 'Listar datas de sessões', {
       cityId: z.string().describe("ID obrigatório da cidade."),
       theaterId: z.string().optional().describe("ID do cinema, alternativa aos outros seletores."),

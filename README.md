@@ -13,9 +13,9 @@ Plugin do Claude Code (servidor MCP + skills) para consultar a [API de conteúdo
 
 Requer Node >= 24 (TypeScript nativo, sem build).
 
-## Ferramentas MCP
+## Ferramentas MCP (14)
 
-`list_states`, `find_city`, `list_movies`, `search_events`, `get_event`, `get_event_credits`, `list_tags`, `list_theaters`, `get_theater`, `list_sessions`, `list_session_dates`, `get_session`, `get_passport_promotion`.
+`list_states`, `find_city`, `list_movies`, `search_events`, `get_event`, `get_event_credits`, `list_tags`, `list_theaters`, `get_theater`, `list_sessions`, `find_showtimes`, `list_session_dates`, `get_session`, `get_passport_promotion`.
 
 Todas carregam `annotations` MCP derivadas do método HTTP (`readOnlyHint: true`, `destructiveHint: false`).
 

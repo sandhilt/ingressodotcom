@@ -34,17 +34,17 @@ function text(result: CallToolResult): string {
   return content.text;
 }
 
-test('tools/list exposes all 13 tools, complete derived annotations and described fields', async t => {
+test('tools/list exposes all 14 tools, complete derived annotations and described fields', async t => {
   const gateway = new FakeContentGateway();
   const connection = await connect(gateway);
   t.after(() => connection.close());
   const { tools } = await connection.client.listTools();
   const definitions = createTools({ gateway });
-  assert.equal(tools.length, 13);
+  assert.equal(tools.length, 14);
   assert.deepEqual(tools.map(tool => tool.name), [
     'list_states', 'find_city', 'list_movies', 'search_events', 'get_event',
     'get_event_credits', 'list_tags', 'list_theaters', 'get_theater',
-    'list_sessions', 'list_session_dates', 'get_session', 'get_passport_promotion',
+    'list_sessions', 'find_showtimes', 'list_session_dates', 'get_session', 'get_passport_promotion',
   ]);
   for (const tool of tools) {
     const definition = definitions.find(candidate => candidate.name === tool.name)!;
@@ -95,7 +95,7 @@ test('annotations combine safety of all methods, including future writes and unk
   assert.equal(annotations([]).destructiveHint, true);
 });
 
-test('all 13 calls round-trip through matching use cases and gateway methods', async t => {
+test('pass-through tools round-trip through matching use cases and gateway methods', async t => {
   const gateway = new FakeContentGateway();
   const connection = await connect(gateway);
   t.after(() => connection.close());
@@ -250,4 +250,31 @@ test('tool and skill guidance accurately describe defaults and selectors', async
   assert.match(skill, /`groupBySessionType` with `cityId` plus `theaterId` or `eventId`/);
   assert.match(skill, /otherwise `1`.*`ingresso` returns a restricted catalog/);
   assert.match(skill, /YYYY-MM-DD/);
+});
+
+test('find_showtimes projects compact summaries, supports details and validates its selectors', async t => {
+  const gateway = new FakeContentGateway();
+  gateway.results.sessions = [{ date: '2026-10-11', dayOfWeek: 'domingo', movies: [{
+    id: '1', title: 'Coração', rooms: [{ name: 'Sala 1', sessions: [{
+      id: 's', time: '12:00', type: ['2D'], price: 20, siteURL: 'https://checkout.example',
+    }] }],
+  }] }];
+  const connection = await connect(gateway);
+  t.after(() => connection.close());
+  const input = { cityId: 'city', theaterUrlKey: 'slug', title: 'coracao' };
+  const result = await connection.client.callTool({ name: 'find_showtimes', arguments: input }) as CallToolResult;
+  assert.ok(!result.isError, text(result));
+  const parsed = JSON.parse(text(result));
+  assert.deepEqual(parsed.event, { id: '1', title: 'Coração' });
+  assert.equal(parsed.days[0].sessionCount, 1);
+  assert.equal('sessions' in parsed.days[0], false);
+  assert.deepEqual(gateway.calls.at(-1), { method: 'sessions', args: [{ cityId: 'city', theaterUrlKey: 'slug', partnership: 'configured' }] });
+  const details = await connection.client.callTool({ name: 'find_showtimes', arguments: { ...input, includeSessions: true } }) as CallToolResult;
+  assert.equal(JSON.parse(text(details)).days[0].sessions[0].checkoutUrl, 'https://checkout.example');
+  const before = gateway.calls.length;
+  for (const args of [{ ...input, eventId: '1' }, { ...input, theaterId: '2' }, { cityId: 'city', title: 'Movie' }, { ...input, date: '2026-02-30' }]) {
+    const invalid = await connection.client.callTool({ name: 'find_showtimes', arguments: args }) as CallToolResult;
+    assert.equal(invalid.isError, true);
+  }
+  assert.equal(gateway.calls.length, before);
 });

@@ -26,7 +26,7 @@ Read `AGENTS.md` first (stack + layer rules). Spec: `docs/samples/swagger-v0.jso
 - `ToolDefinition` = `{ name, title, description, inputSchema (zod `z.object`), operations: Array<{method, path}>, handler(input) }`. `annotations` are DERIVED: `readOnlyHint`/`destructiveHint`/`idempotentHint` from `classifyMethod` over `operations` (readOnly only if all are), `openWorldHint: true`.
 - `server.ts`: builds `McpServer` from `@modelcontextprotocol/server` v2 (`registerTool` with `inputSchema: z.object({...})`, raw shapes are deprecated; stdio entry via `serveStdio(createServer)` from `@modelcontextprotocol/server/stdio` (factory must be cheap and side-effect free), as in the SDK `examples/server-quickstart`), registers all tools, maps domain errors to `{ isError: true, content: [{type:'text', text}] }`, returns JSON text content (compact, truncate arrays over ~50 items with a note saying how many were dropped, to protect model context). stdio via `StdioServerTransport`. Never write to stdout except through the transport (log to stderr).
 - Tools (snake_case, Portuguese-friendly descriptions mentioning that content is pt-BR/Brazil):
-  `list_states`, `find_city`, `list_movies` (category: nowplaying|soon|highlights|premiere, optional cityId), `search_events` (by tagName | tagUrlKey | cityId | comingSoon | all), `get_event` (id | urlKey), `get_event_credits`, `list_tags`, `list_theaters` (all | cityId), `get_theater` (id | urlKey), `list_sessions` (cityId + theaterId|theaterUrlKey|eventId|eventUrlKey, optional groupBySessionType, date), `list_session_dates`, `get_session`, `get_passport_promotion`.
+  `list_states`, `find_city`, `list_movies` (category: nowplaying|soon|highlights|premiere, optional cityId), `search_events` (by tagName | tagUrlKey | cityId | comingSoon | all), `get_event` (id | urlKey), `get_event_credits`, `list_tags`, `list_theaters` (all | cityId), `get_theater` (id | urlKey), `find_showtimes` (cityId + theaterId|theaterUrlKey e eventId|title, date opcional, includeSessions padrão false), `list_sessions` (cityId + theaterId|theaterUrlKey|eventId|eventUrlKey, optional groupBySessionType, date), `list_session_dates`, `get_session`, `get_passport_promotion`.
   Every tool takes optional `partnership`.
 
 ## Composition (`src/main.ts`)
@@ -40,3 +40,6 @@ Shebang-less ESM entry; loads config, builds gateway, use cases, tools, starts t
 
 ## Plugin packaging (done by coordinator, not part of Codex tasks)
 `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.mcp.json`, `skills/`, `README.md`.
+
+## Resumo de sessões
+As 14 ferramentas incluem `find_showtimes`: o caso de uso usa apenas as rotas GET de sessões de um cinema. `summarizeShowtimes` é uma função pura que resolve o filme por ID ou trecho do título/título original sem acentos ou distinção de maiúsculas, retorna `matches` sem sessões quando há ambiguidade e agrupa contagens, preços e combinações de tipos por dia. Detalhes individuais são opcionais; resultados vazios são amigáveis. A API informa preços por sessão, mas não disponibilidade de assentos.
