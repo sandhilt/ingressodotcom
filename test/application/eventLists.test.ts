@@ -4,14 +4,7 @@ import { listMovies, searchEvents } from '../../src/application/usecases/content
 import { FakeContentGateway } from '../support/FakeContentGateway.ts';
 import { InvalidInputError } from '../../src/domain/errors.ts';
 
-function rioCatalog() {
-  return [
-    ...Array.from({ length: 180 }, (_, id) => ({ id: String(id), title: `Reexibição ${id}`, countIsPlaying: 2, synopsis: 'x'.repeat(5000) })),
-    { id: 'a', title: 'Verity', countIsPlaying: 393 },
-    { id: 'b', title: 'Se Eu Fosse Você 3', countIsPlaying: 397 },
-    { id: 'c', title: 'Vingadores: Doutor Destino', countIsPlaying: 376, inPreSale: true },
-  ];
-}
+import { rioCatalog } from '../support/eventCatalog.ts';
 
 test('fetches all nowplaying pages before sorting and paging the compact Rio catalog', async () => {
   const gateway = new FakeContentGateway();

@@ -1,3 +1,4 @@
+import { MAX_INT32, TEMPLATE_KINDS } from '../eventLimits.ts';
 import type { Event } from '../../domain/entities.ts';
 import type { EventPageInput } from './eventPage.ts';
 import { eventItems, eventPage, validateEventPage } from './eventPage.ts';
@@ -15,7 +16,7 @@ function integers(input: object, keys: string[]) {
     if (values[key] !== undefined && (
       !Number.isInteger(values[key])
       || (values[key] as number) < 0
-      || (values[key] as number) > 2147483647
+      || (values[key] as number) > MAX_INT32
     )) {
       throw new InvalidInputError(`Invalid ${key}`);
     }
@@ -55,7 +56,7 @@ export async function getEvent(deps: Deps, input: PartnershipInput & EventOption
 export async function getEventCredits(deps: Deps, input: CreditsOptions & {
   id: number;
 }) {
-  if (!Number.isInteger(input.id) || input.id < 1 || input.id > 2147483647) {
+  if (!Number.isInteger(input.id) || input.id < 1 || input.id > MAX_INT32) {
     throw new InvalidInputError('Invalid event id');
   }
   integers(input, ['castLimit', 'crewLimit']);
@@ -98,7 +99,7 @@ export async function listMovies(deps: Deps, input: PartnershipInput & EventPage
   category: TemplateKind;
   cityId?: string;
 }) {
-  if (!['nowplaying', 'soon', 'highlights', 'premiere'].includes(input.category)) {
+  if (!TEMPLATE_KINDS.includes(input.category)) {
     throw new InvalidInputError('Invalid category');
   }
   if (input.category !== 'nowplaying' || input.cityId !== undefined) {

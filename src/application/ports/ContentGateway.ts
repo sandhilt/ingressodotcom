@@ -1,4 +1,6 @@
 import type { City, State, Event, Theater, Session, ListResponse } from '../../domain/entities.ts';
+import type { TemplateKind } from '../eventLimits.ts';
+export type { TemplateKind } from '../eventLimits.ts';
 
 export interface EventOptions {
   includeCities?: boolean;
@@ -22,7 +24,6 @@ export interface NearOptions {
   resultCount?: number;
 }
 
-export type TemplateKind = 'nowplaying' | 'soon' | 'highlights' | 'premiere';
 
 export interface TemplateOptions {
   limit?: number;

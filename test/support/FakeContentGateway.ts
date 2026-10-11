@@ -28,7 +28,9 @@ export class FakeContentGateway implements ContentGateway {
     options?: TemplateOptions,
   ): Promise<unknown> {
     if (this.templatePages) {
-      this.results.templates = this.templatePages[Math.floor((options?.skip ?? 0) / 100)] ?? [];
+      const skip = options?.skip ?? 0;
+      const end = options?.limit === undefined ? undefined : skip + options.limit;
+      this.results.templates = this.templatePages.flat().slice(skip, end);
     }
     return this.invoke('templates', [kind, partnership, cityId, options]);
   }

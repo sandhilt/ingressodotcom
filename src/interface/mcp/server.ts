@@ -2,14 +2,14 @@ import { McpServer } from '@modelcontextprotocol/server';
 import type { Deps } from '../../application/usecases/Deps.ts';
 import { InvalidInputError, NotFoundError, UpstreamError } from '../../domain/errors.ts';
 import type { ToolDefinition } from './ToolDefinition.ts';
-import { deriveAnnotations } from './ToolDefinition.ts';
+import { DEFAULT_OUTPUT_PAGE_LIMIT, deriveAnnotations } from './ToolDefinition.ts';
 import { createTools } from './tools.ts';
 
 const OUTPUT_BUDGET = 100_000;
 const NARROW_QUERY = 'Output truncated. Narrow the query by city, theater, event or date, or request fewer results.';
 
 /** Bound JSON output without mutating upstream results. */
-function serialize(value: unknown, pageLimit = 50): string {
+function serialize(value: unknown, pageLimit = DEFAULT_OUTPUT_PAGE_LIMIT): string {
   if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
     const result = value as Record<string, unknown>;
     if (Array.isArray(result.items) && result.items.length === 0 && result.count === 0) {
@@ -94,7 +94,7 @@ export function createServer(
     }, async input => {
       try {
         const result = await tool.handler(input);
-        return { content: [{ type: 'text', text: serialize(result, ['list_movies', 'search_events'].includes(tool.name) ? 200 : 50) }] };
+        return { content: [{ type: 'text', text: serialize(result, tool.outputPageLimit) }] };
       } catch (error) {
         return { isError: true, content: [{ type: 'text', text: errorMessage(error) }] };
       }

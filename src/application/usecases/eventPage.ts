@@ -1,3 +1,4 @@
+import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MAX_INT32 } from '../eventLimits.ts';
 import type { Event } from '../../domain/entities.ts';
 import { summarizeEvent } from '../../domain/summarizeEvent.ts';
 import { InvalidInputError } from '../../domain/errors.ts';
@@ -10,12 +11,12 @@ export interface EventPageInput {
 }
 
 export function validateEventPage(input: EventPageInput) {
-  const limit = input.limit ?? 40;
+  const limit = input.limit ?? DEFAULT_PAGE_SIZE;
   const skip = input.skip ?? 0;
-  if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
-    throw new InvalidInputError('limit must be an integer between 1 and 200');
+  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_PAGE_SIZE) {
+    throw new InvalidInputError(`limit must be an integer between 1 and ${MAX_PAGE_SIZE}`);
   }
-  if (!Number.isInteger(skip) || skip < 0 || skip > 2147483647) {
+  if (!Number.isInteger(skip) || skip < 0 || skip > MAX_INT32) {
     throw new InvalidInputError('Invalid skip');
   }
   if (input.sort !== undefined && !['popularity', 'api'].includes(input.sort)) {
@@ -41,7 +42,7 @@ function movieEvent(item: Event): Event {
 }
 
 export function eventPage(events: Event[], input: EventPageInput) {
-  const limit = input.limit ?? 40;
+  const limit = input.limit ?? DEFAULT_PAGE_SIZE;
   const skip = input.skip ?? 0;
   const sorted = [...events];
   if ((input.sort ?? 'popularity') === 'popularity') {

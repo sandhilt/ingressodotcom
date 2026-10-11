@@ -13,7 +13,7 @@ function fixture(options: { clock?: () => number; fetch?: typeof fetch; timeoutM
   };
   const gateway = new IngressoHttpGateway({
     ...loadConfig({}),
-    timeoutMs: options.timeoutMs ?? 15_000,
+    ...(options.timeoutMs === undefined ? {} : { timeoutMs: options.timeoutMs }),
   }, { fetch: options.fetch ?? stub, clock: options.clock });
   return { gateway, calls };
 }

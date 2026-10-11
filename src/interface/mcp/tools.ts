@@ -1,3 +1,4 @@
+import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MAX_INT32, TEMPLATE_KINDS } from '../../application/eventLimits.ts';
 import * as z from 'zod/v4';
 import * as usecases from '../../application/usecases/index.ts';
 import { DEFAULT_PARTNERSHIP } from '../../application/usecases/Deps.ts';
@@ -21,27 +22,49 @@ const guidance: Record<string, string> = {
   get_passport_promotion: 'Consulte a promoção de passaporte disponível.',
 };
 
+function partnershipField() {
+  return z.string().optional().describe(
+    `Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`,
+  );
+}
+
+function resourceSelectors() {
+  return {
+    id: z.string().optional().describe("Identificador do recurso."),
+    urlKey: z.string().optional().describe("Chave de URL do recurso, alternativa ao ID."),
+  };
+}
+
+function includeCitiesField() {
+  return z.boolean().optional().describe("Incluir cidades nos eventos retornados.");
+}
+
+function includeOperationPoliciesField() {
+  return z.boolean().optional().describe("Incluir políticas de operação do cinema.");
+}
+
 function define<S extends z.ZodRawShape>(
   name: string,
   title: string,
   inputSchema: S,
   paths: string[],
-  handler: (input: z.infer<z.ZodObject<S>>) => Promise<unknown>,
+  handler: (input: z.infer<z.ZodObject<S>> & { partnership?: string }) => Promise<unknown>,
+  outputPageLimit?: number,
 ): ToolDefinition {
   const schema = z.object({
     ...inputSchema,
-    partnership: z.string().optional().describe(
-      `Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`,
-    ),
+    partnership: partnershipField(),
   });
-  return {
+  const tool: ToolDefinition = {
     name,
+    outputPageLimit,
     title,
     description: `${guidance[name]} ${title} na API ingresso.com, com conteúdo em pt-BR para o Brasil. Escolha apenas um seletor quando houver alternativas.`,
     inputSchema: schema,
     operations: paths.map(path => ({ method: 'GET', path })),
-    handler: input => handler(z.object(inputSchema).parse(input)),
+    handler: input => handler(tool.inputSchema.parse(input) as z.infer<z.ZodObject<S>> & { partnership?: string }),
   };
+  return tool;
 }
 
 export function createTools(deps: Deps): ToolDefinition[] {
@@ -53,9 +76,6 @@ export function createTools(deps: Deps): ToolDefinition[] {
     title: z.string().trim().min(1).optional().describe('Trecho do título ou título original, sem distinção de acentos ou maiúsculas; ambiguidades retornam matches para escolher eventId.'),
     date: z.iso.date().optional().describe('Data opcional no formato YYYY-MM-DD para restringir a um dia.'),
     includeSessions: z.boolean().default(false).describe('Incluir detalhes de cada sessão; padrão false retorna apenas o resumo diário.'),
-    partnership: z.string().optional().describe(
-      'Parceiro opcional; usa o padrão configurado ou ' + DEFAULT_PARTNERSHIP + '. ingresso retorna um catálogo restrito.',
-    ),
   }, [
     '/v0/sessions/city/{cityId}/theater/{theaterId}/partnership/{partnership}',
     '/v0/sessions/city/{cityId}/theater/url-key/{theaterUrlKey}/partnership/{partnership}',
@@ -75,8 +95,7 @@ export function createTools(deps: Deps): ToolDefinition[] {
       uf: z.string().optional().describe("UF para restringir a busca por nome."),
       lat: z.number().optional().describe("Latitude da localização, usada junto com long."),
       long: z.number().optional().describe("Longitude, enviada como lng à API."),
-      id: z.string().optional().describe("Identificador do recurso."),
-      urlKey: z.string().optional().describe("Chave de URL do recurso, alternativa ao ID."),
+      ...resourceSelectors(),
       theaterSlug: z.string().optional().describe("Slug do cinema para resolver a cidade."),
       radiusInKilometers: z.number().optional().describe("Raio em quilômetros para a busca por coordenadas."),
       resultCount: z.number().optional().describe("Quantidade de cidades retornadas pela busca por coordenadas."),
@@ -88,13 +107,12 @@ export function createTools(deps: Deps): ToolDefinition[] {
       '/v0/states/city/theater/{theaterSlug}',
     ], input => usecases.findCity(deps, input)),
     define('list_movies', 'Listar filmes', {
-      category: z.enum(['nowplaying', 'soon', 'highlights', 'premiere']).describe("Categoria: nowplaying, soon, highlights ou premiere; todas exceto nowplaying exigem cityId."),
+      category: z.enum(TEMPLATE_KINDS).describe("Categoria: nowplaying, soon, highlights ou premiere; todas exceto nowplaying exigem cityId."),
       cityId: z.string().optional().describe("ID da cidade; opcional apenas em nowplaying."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
       compact: z.boolean().default(true).describe('Resumo sem sinopse, imagens ou trailers; false retorna eventos completos.'),
       sort: z.enum(['popularity', 'api']).default('popularity').describe('popularity: tamanho de exibição decrescente e título; api: ordem original.'),
-      limit: z.number().int().min(1).max(200).default(40).describe('Itens retornados por página da ferramenta; padrão 40, máximo 200.'),
-      skip: z.number().int().min(0).max(2147483647).optional().describe('Offset na lista ordenada, padrão 0; somente nowplaying. Use nextSkip quando hasMore.'),
+      limit: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).describe(`Itens retornados por página da ferramenta; padrão ${DEFAULT_PAGE_SIZE}, máximo ${MAX_PAGE_SIZE}.`),
+      skip: z.number().int().min(0).max(MAX_INT32).optional().describe('Offset na lista ordenada, padrão 0; somente nowplaying. Use nextSkip quando hasMore.'),
       theatersIds: z.string().optional().describe("IDs de cinemas para highlights, no formato aceito pela API."),
       justEvents: z.boolean().optional().describe("Retornar apenas eventos; somente highlights."),
     }, [
@@ -103,31 +121,28 @@ export function createTools(deps: Deps): ToolDefinition[] {
       '/v0/templates/nowplaying/partnership/{partnership}',
       '/v0/templates/nowplaying/{cityId}/partnership/{partnership}',
       '/v0/templates/premiere/{cityId}/partnership/{partnership}',
-    ], input => usecases.listMovies(deps, input)),
+    ], input => usecases.listMovies(deps, input), MAX_PAGE_SIZE),
     define('search_events', 'Buscar eventos', {
       tagName: z.string().optional().describe("Nome da categoria de eventos."),
       tagUrlKey: z.string().optional().describe("Chave de URL da categoria de eventos."),
       cityId: z.string().optional().describe("ID da cidade para filtrar os resultados."),
       comingSoon: z.boolean().optional().describe("Consultar próximos lançamentos, sem outro seletor."),
       all: z.boolean().optional().describe("Consultar todos os eventos, sem outro seletor."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
-      includeCities: z.boolean().optional().describe("Incluir cidades nos eventos retornados."),
-      skip: z.number().int().min(0).max(2147483647).default(0).describe('Offset na lista ordenada; use nextSkip quando hasMore.'),
+      includeCities: includeCitiesField(),
+      skip: z.number().int().min(0).max(MAX_INT32).default(0).describe('Offset na lista ordenada; use nextSkip quando hasMore.'),
       compact: z.boolean().default(true).describe('Resumo sem sinopse, imagens ou trailers; false retorna eventos completos.'),
       sort: z.enum(['popularity', 'api']).default('popularity').describe('popularity: tamanho de exibição decrescente e título; api: ordem original.'),
-      limit: z.number().int().min(1).max(200).default(40).describe('Itens retornados por página da ferramenta; padrão 40, máximo 200.'),
+      limit: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).describe(`Itens retornados por página da ferramenta; padrão ${DEFAULT_PAGE_SIZE}, máximo ${MAX_PAGE_SIZE}.`),
     }, [
       '/v0/events/partnership/{partnership}',
       '/v0/events/tagName/{tagName}/partnership/{partnership}',
       '/v0/events/tagUrlKey/{tagUrlKey}/partnership/{partnership}',
       '/v0/events/coming-soon/partnership/{partnership}',
       '/v0/events/city/{cityId}/partnership/{partnership}',
-    ], input => usecases.searchEvents(deps, input)),
+    ], input => usecases.searchEvents(deps, input), MAX_PAGE_SIZE),
     define('get_event', 'Consultar evento', {
-      id: z.string().optional().describe("Identificador do recurso."),
-      urlKey: z.string().optional().describe("Chave de URL do recurso, alternativa ao ID."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
-      includeCities: z.boolean().optional().describe("Incluir cidades nos eventos retornados."),
+      ...resourceSelectors(),
+      includeCities: includeCitiesField(),
     }, [
       '/v0/events/{id}/partnership/{partnership}',
       '/v0/events/url-key/{urlKey}/partnership/{partnership}',
@@ -145,17 +160,14 @@ export function createTools(deps: Deps): ToolDefinition[] {
     ], () => usecases.listTags(deps)),
     define('list_theaters', 'Listar cinemas', {
       cityId: z.string().optional().describe("ID da cidade para filtrar os resultados."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
-      includeOperationPolicies: z.boolean().optional().describe("Incluir políticas de operação do cinema."),
+      includeOperationPolicies: includeOperationPoliciesField(),
     }, [
       '/v0/theaters/partnership/{partnership}',
       '/v0/theaters/city/{cityId}/partnership/{partnership}',
     ], input => usecases.listTheaters(deps, input)),
     define('get_theater', 'Consultar cinema', {
-      id: z.string().optional().describe("Identificador do recurso."),
-      urlKey: z.string().optional().describe("Chave de URL do recurso, alternativa ao ID."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
-      includeOperationPolicies: z.boolean().optional().describe("Incluir políticas de operação do cinema."),
+      ...resourceSelectors(),
+      includeOperationPolicies: includeOperationPoliciesField(),
     }, [
       '/v0/theaters/{id}/partnership/{partnership}',
       '/v0/theaters/url-key/{urlKey}/partnership/{partnership}',
@@ -166,10 +178,9 @@ export function createTools(deps: Deps): ToolDefinition[] {
       theaterUrlKey: z.string().optional().describe("Chave de URL do cinema, alternativa aos outros seletores."),
       eventId: z.string().optional().describe("ID do evento, alternativa aos outros seletores."),
       eventUrlKey: z.string().optional().describe("Chave de URL do evento, alternativa aos outros seletores."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
       groupBySessionType: z.boolean().optional().describe("Agrupar por tipo de sessão; exige ID de cinema ou evento."),
       date: z.string().optional().describe("Data no formato YYYY-MM-DD."),
-      includeOperationPolicies: z.boolean().optional().describe("Incluir políticas de operação do cinema."),
+      includeOperationPolicies: includeOperationPoliciesField(),
       sessionTypeList: z.string().optional().describe("Filtro de tipos de sessão; somente com eventUrlKey."),
       legendList: z.string().optional().describe("Filtro de legendas; somente com eventUrlKey."),
     }, [
@@ -186,15 +197,13 @@ export function createTools(deps: Deps): ToolDefinition[] {
       cityId: z.string().describe("ID obrigatório da cidade."),
       theaterId: z.string().optional().describe("ID do cinema, alternativa aos outros seletores."),
       eventId: z.string().optional().describe("ID do evento, alternativa aos outros seletores."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
     }, [
       '/v0/sessions/city/{cityId}/theater/{theaterId}/dates/partnership/{partnership}',
       '/v0/sessions/city/{cityId}/event/{eventId}/dates/partnership/{partnership}',
     ], input => usecases.listSessionDates(deps, input)),
     define('get_session', 'Consultar sessão', {
       id: z.string().describe("Identificador do recurso."),
-      partnership: z.string().optional().describe(`Parceiro opcional; usa o padrão configurado ou ${DEFAULT_PARTNERSHIP}. ingresso retorna um catálogo restrito.`),
-      includeOperationPolicies: z.boolean().optional().describe("Incluir políticas de operação do cinema."),
+      includeOperationPolicies: includeOperationPoliciesField(),
     }, [
       '/v0/sessions/{id}/partnership/{partnership}',
     ], input => usecases.getSession(deps, input)),

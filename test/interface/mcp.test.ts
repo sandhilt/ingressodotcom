@@ -4,29 +4,14 @@ import { DEFAULT_PARTNERSHIP } from '../../src/application/usecases/Deps.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 import type { CallToolResult } from '@modelcontextprotocol/client';
 import type { ContentGateway } from '../../src/application/ports/ContentGateway.ts';
 import { InvalidInputError, NotFoundError, UpstreamError } from '../../src/domain/errors.ts';
 import { deriveAnnotations } from '../../src/interface/mcp/ToolDefinition.ts';
 import { createTools } from '../../src/interface/mcp/tools.ts';
-import { createServer } from '../../src/interface/mcp/server.ts';
 import { FakeContentGateway } from '../support/FakeContentGateway.ts';
-
-async function connect(gateway: FakeContentGateway) {
-  const server = createServer({ gateway, config: { partnership: 'configured' } });
-  const client = new Client({ name: 'interface-test', version: '1.0.0' });
-  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-  await server.connect(serverTransport);
-  await client.connect(clientTransport);
-  return {
-    client,
-    async close() {
-      await client.close();
-      await server.close();
-    },
-  };
-}
+import { connect } from '../support/mcpConnection.ts';
+import { rioCatalog } from '../support/eventCatalog.ts';
 
 function text(result: CallToolResult): string {
   const content = result.content[0];
@@ -215,12 +200,9 @@ test('204 session results pass through use cases and produce friendly MCP empty 
   const gateway = new IngressoHttpGateway(loadConfig({}), {
     fetch: async () => new Response(null, { status: 204 }),
   });
-  const server = createServer({ gateway });
-  const client = new Client({ name: 'empty-result-test', version: '1' });
-  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-  await server.connect(serverTransport);
-  await client.connect(clientTransport);
-  t.after(async () => { await client.close(); await server.close(); });
+  const connection = await connect(gateway);
+  const { client } = connection;
+  t.after(() => connection.close());
   for (const name of ['list_sessions', 'list_session_dates']) {
     const result = await client.callTool({ name, arguments: { cityId: '1', eventId: '2' } }) as CallToolResult;
     assert.ok(!result.isError, text(result));
@@ -279,12 +261,7 @@ test('find_showtimes projects compact summaries, supports details and validates 
 
 test('event tools expose compact sorted pages and preserve pages above the generic array limit', async t => {
   const gateway = new FakeContentGateway();
-  const events = [
-    ...Array.from({ length: 180 }, (_, id) => ({ id: String(id), title: `Antigo ${id}`, countIsPlaying: 2, synopsis: 'x'.repeat(5000) })),
-    { id: 'v', title: 'Verity', countIsPlaying: 393 },
-    { id: 's', title: 'Se Eu Fosse Você 3', countIsPlaying: 397 },
-    { id: 'd', title: 'Vingadores: Doutor Destino', countIsPlaying: 376 },
-  ];
+  const events = rioCatalog();
   gateway.templatePages = [events.slice(0, 100), events.slice(100)];
   gateway.results.events = { items: events };
   const connection = await connect(gateway);

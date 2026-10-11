@@ -9,28 +9,22 @@ Read `AGENTS.md` first (stack + layer rules). Spec: `docs/samples/swagger-v0.jso
 
 ## Application (`src/application/`)
 - `ports/ContentGateway.ts`: one method per upstream concern, all take already-validated plain args and return parsed JSON (`unknown`-ish domain types). All methods that need it accept `partnership: string`.
-  states(), stateByUf(uf), cityById(id), cityByUrlKey(key), cityByTheaterSlug(slug), citiesNear(lat, long),
-  events(partnership), eventsByTag(tagName|tagUrlKey), eventById(id), eventByUrlKey(key), eventCredits(id), eventsComingSoon(), eventsByCity(cityId),
-  tags(), passportPromotion(),
-  templates(kind: 'nowplaying'|'soon'|'highlights'|'premiere', cityId?),
-  theaters(), theaterById(id), theaterByUrlKey(key), theatersByCity(cityId),
-  sessionById(id), sessions({ cityId?, theaterId?|theaterUrlKey?, eventId?|eventUrlKey?, groupBySessionType?, date? }), sessionDates({ cityId, theaterId?|eventId? }), sessionExistsByUrlKey(urlKey).
   Check the swagger for exact paths and query params (e.g. date filters) — do not guess.
-- `usecases/`: thin functions `(deps, input) => Promise<result>` that apply defaults (partnership), validate invariants, and call the gateway. Add `findCity({ name?, uf?, lat?, long?, id?, urlKey?, theaterSlug? })` which resolves a city by whichever input is given (name = case/accent-insensitive search over `states()`).
+- `usecases/`: thin functions `(deps, input) => Promise<result>` that apply defaults (partnership), validate invariants, and call the gateway. `findCity` which resolves a city by whichever input is given (name = case/accent-insensitive search over `states()`).
 
 ## Infrastructure (`src/infrastructure/`)
 - `http/IngressoHttpGateway.ts` implements `ContentGateway` with global `fetch`, `AbortSignal.timeout` (default 15 s, env `INGRESSO_TIMEOUT_MS`), `encodeURIComponent` on every path segment, 404 -> `NotFoundError`, other non-2xx -> `UpstreamError`, small in-memory TTL cache (60 s) for `states()` and `tags()` only.
 - `config.ts`: reads env `INGRESSO_BASE_URL` (default `https://api-content.ingresso.com`), `INGRESSO_PARTNERSHIP` (default `1`), `INGRESSO_TIMEOUT_MS`.
 
 ## Interface (`src/interface/mcp/`)
-- `ToolDefinition` = `{ name, title, description, inputSchema (zod `z.object`), operations: Array<{method, path}>, handler(input) }`. `annotations` are DERIVED: `readOnlyHint`/`destructiveHint`/`idempotentHint` from `classifyMethod` over `operations` (readOnly only if all are), `openWorldHint: true`.
-- `server.ts`: builds `McpServer` from `@modelcontextprotocol/server` v2 (`registerTool` with `inputSchema: z.object({...})`, raw shapes are deprecated; stdio entry via `serveStdio(createServer)` from `@modelcontextprotocol/server/stdio` (factory must be cheap and side-effect free), as in the SDK `examples/server-quickstart`), registers all tools, maps domain errors to `{ isError: true, content: [{type:'text', text}] }`, returns JSON text content (compact, truncate arrays over ~50 items with a note saying how many were dropped, to protect model context). stdio via `StdioServerTransport`. Never write to stdout except through the transport (log to stderr).
+- `ToolDefinition` = `{ name, title, description, inputSchema (zod `z.object`), operations: Array<{method, path}>, outputPageLimit?, handler(input) }`. `annotations` are DERIVED: `readOnlyHint`/`destructiveHint`/`idempotentHint` from `classifyMethod` over `operations` (readOnly only if all are), `openWorldHint: true`.
+- `server.ts` registra as ferramentas no MCP SDK v2 e mapeia erros de domínio. A saída JSON limita arrays a 50 itens por padrão, ou 200 em `list_movies`/`search_events`, com nota de truncamento; o orçamento global pode reduzir esses limites. Nunca escreva em stdout fora do transporte (logs em stderr).
 - Tools (snake_case, Portuguese-friendly descriptions mentioning that content is pt-BR/Brazil):
   `list_states`, `find_city`, `list_movies` (category: nowplaying|soon|highlights|premiere, optional cityId), `search_events` (by tagName | tagUrlKey | cityId | comingSoon | all), `get_event` (id | urlKey), `get_event_credits`, `list_tags`, `list_theaters` (all | cityId), `get_theater` (id | urlKey), `find_showtimes` (cityId + theaterId|theaterUrlKey e eventId|title, date opcional, includeSessions padrão false), `list_sessions` (cityId + theaterId|theaterUrlKey|eventId|eventUrlKey, optional groupBySessionType, date), `list_session_dates`, `get_session`, `get_passport_promotion`.
   Every tool takes optional `partnership`.
 
 ## Composition (`src/main.ts`)
-Shebang-less ESM entry; loads config, builds gateway, use cases, tools, starts the stdio server. Must work with `node src/main.ts`.
+ESM entry; loads config, builds gateway, use cases, tools, starts the stdio server. Must work with `node src/main.ts`.
 
 ## Tests (`test/`, `node:test` + `node:assert/strict`)
 - domain: `classifyMethod`.
@@ -46,7 +40,7 @@ As 14 ferramentas incluem `find_showtimes`: o caso de uso usa apenas as rotas GE
 
 ## Listas compactas e paginação de eventos
 
-- Domain: `summarizeEvent` é uma projeção pura para id, title, originalTitle (somente diferente), genres, contentRating, duration, premiere (YYYY-MM-DD de premiereDate.localDate), inPreSale, isReexhibition, isComingSoon, showSize (countIsPlaying) e siteURL.
+- Domain: `summarizeEvent` projeta o resumo compacto sem alterar os eventos de origem.
 - Application: listMovies busca páginas nowplaying de 100 itens com skip crescente via ContentGateway.templates, até uma página vazia/curta. Teto de 20 páginas; ao atingir o teto sem comprovar o fim, retorna erro em vez de um total incompleto. Outras categorias são buscadas uma vez, sem skip upstream. A validação de skip exclusivo de nowplaying é preservada.
 - EventPageInput separa a paginação da ferramenta das opções upstream TemplateOptions/LimitedEventOptions. compact padrão true, sort padrão popularity (countIsPlaying decrescente, título pt-BR para desempate), alternativa api, limit padrão 40 (1–200), skip padrão 0. Ordenação precede o recorte; compact false mantém os eventos brutos dentro do mesmo envelope.
 - searchEvents não repassa limit à API: projeta, ordena e pagina a lista recebida. Todos os seletores aceitam limit/skip.

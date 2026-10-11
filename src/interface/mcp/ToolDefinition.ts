@@ -1,11 +1,14 @@
 import type * as z from 'zod/v4';
 import { classifyMethod } from '../../domain/OperationSafety.ts';
 
+export const DEFAULT_OUTPUT_PAGE_LIMIT = 50;
+
 export interface ToolDefinition {
   name: string;
   title: string;
   description: string;
   inputSchema: z.ZodObject;
+  outputPageLimit?: number;
   operations: Array<{ method: string; path: string }>;
   handler(input: Record<string, unknown>): Promise<unknown>;
 }
