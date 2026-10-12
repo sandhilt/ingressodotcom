@@ -1,5 +1,5 @@
 {
-  "name": "ingressodotcom",
+  "name": "@sandhilt/ingressodotcom-mcp",
   "version": "0.2.1",
   "description": "Claude Code plugin (MCP server + skills) for the public ingresso.com content API",
   "type": "module",
@@ -9,7 +9,7 @@
     "node": ">=24"
   },
   "bin": {
-    "ingressodotcom-mcp": "src/main.ts"
+    "ingressodotcom-mcp": "launcher.mjs"
   },
   "scripts": {
     "start": "node src/main.ts",
@@ -24,5 +24,13 @@
     "@modelcontextprotocol/client": "2.3.1",
     "@types/node": "^24.0.0",
     "typescript": "^5.9.0"
+  },
+  "files": [
+    "launcher.mjs",
+    "src/**"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
